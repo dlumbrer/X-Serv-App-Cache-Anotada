@@ -4,11 +4,15 @@ import webapp
 import urllib
 
 cache = {}
+cab1 = {}
 
 class escrituraApp(webapp.webApp):
 
     def parse(self, request):
-        rec = request.split()[1][1:]  
+        rec = request.split()[1][1:]
+	cabeceras = request.split("\r\n")[1:] #La primera (0) es la peticion
+	print "--------------------------------------------------" + str(cabeceras)
+	cab1[rec] = cabeceras;  
         return rec
 
 
@@ -16,9 +20,8 @@ class escrituraApp(webapp.webApp):
         urloriginal = "http://" + rec
 	
 	partes = rec.split("/")
-	print "--------------------------------------------------" + str(partes)
 	
-	if partes[0] != "cache":
+	if partes[0] != "cache" and partes[0] != "cab1":
 	    try:
 		f = urllib.urlopen(urloriginal)
 		html = f.read()
@@ -34,7 +37,7 @@ class escrituraApp(webapp.webApp):
 		html1 = html[:posicionAbsoluta]
 		html2 = html[posicionAbsoluta:]
 		
-		html = html1 + "<p>HOLA " + "<a href='" + urloriginal + "'>Original</a>" + "\r" + "<a href='http://localhost:1234/" + rec + "'>Recarga</a>" + "\r" + "<a href='http://localhost:1234/cache/" + rec + "'>Cache</a>" + "</p>" + html2
+		html = html1 + "<p>HOLA " + "<a href='" + urloriginal + "'>Original</a>" + "\r" + "<a href='http://localhost:1234/" + rec + "'>Recarga</a>" + "\r" + "<a href='http://localhost:1234/cache/" + rec + "'>Cache</a>" + "\r" + "<a href='http://localhost:1234/cab1/" + rec + "'>Cab1</a>" + "</p>" + html2
 		return ("200 OK", html)
 	    except IOError:
 		return ("404 Not Found", "Error: Imposible conectar")
@@ -45,6 +48,12 @@ class escrituraApp(webapp.webApp):
 		return ("200 OK", html)
 	    except KeyError:
 		return ("404 Not Found", "Error: No hay cache almacenada para este sitio")
+	elif partes[0] == "cab1":
+	    try:
+		html = str(cab1[partes[1]])
+		return ("200 OK", html)
+	    except KeyError:
+		return ("404 Not Found", "Error: No hay cabeceras almacenadas para este sitio")
             
 
 if __name__ == "__main__":

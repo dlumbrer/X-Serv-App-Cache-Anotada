@@ -37,7 +37,7 @@ class escrituraApp(webapp.webApp):
 		html1 = html[:posicionAbsoluta]
 		html2 = html[posicionAbsoluta:]
 		
-		html = html1 + "<p>HOLA " + "<a href='" + urloriginal + "'>Original</a>" + "\r" + "<a href='http://localhost:1234/" + rec + "'>Recarga</a>" + "\r" + "<a href='http://localhost:1234/cache/" + rec + "'>Cache</a>" + "\r" + "<a href='http://localhost:1234/cab1/" + rec + "'>Cab1</a>" + "</p>" + html2
+		html = html1 + "<p>HOLA " + "<a href='" + urloriginal + "'>Original</a>" + "\r" + "<a href='http://" + self.hostname + ":" + str(self.port) +"/" + rec + "'>Recarga</a>" + "\r" + "<a href='http://" + self.hostname + ":" + str(self.port) +"/cache/" + rec + "'>Cache</a>" + "\r" + "<a href='http://" + self.hostname + ":" + str(self.port) +"/cab1/" + rec + "'>Cab1</a>" + "</p>" + html2
 		return ("200 OK", html)
 	    except IOError:
 		return ("404 Not Found", "Error: Imposible conectar")
@@ -54,7 +54,11 @@ class escrituraApp(webapp.webApp):
 		return ("200 OK", html)
 	    except KeyError:
 		return ("404 Not Found", "Error: No hay cabeceras almacenadas para este sitio")
-            
+
+    def __init__(self, hostname, port):
+	self.hostname = hostname
+	self.port = port
+	webapp.webApp.__init__(self, hostname, port)           
 
 if __name__ == "__main__":
     servaleat = escrituraApp("localhost", 1234)
